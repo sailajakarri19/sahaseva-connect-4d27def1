@@ -38,7 +38,7 @@ export const getPaymentConfig = createServerFn({ method: "GET" }).handler(
 );
 
 export const createRazorpayOrder = createServerFn({ method: "POST" })
-  .inputValidator((input: { bookingId: string; amount: number }) => {
+  .validator((input: { bookingId: string; amount: number }) => {
     if (!input?.bookingId || typeof input.amount !== "number" || input.amount <= 0) {
       throw new Error("Invalid order request");
     }
