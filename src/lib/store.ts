@@ -133,6 +133,7 @@ function seed(): DB {
       createdAt: startAt - 3_600_000,
       customerEmail: b.customer === "Lakshmi Devi" ? "lakshmi@sahaseva.in" : "guest@sahaseva.in",
       customerName: b.customer,
+      customerPhone: b.customer === "Lakshmi Devi" ? "+91 98490 12345" : "+91 90000 55221",
       workerId: b.workerId,
       categoryId: b.categoryId,
       subservice: b.subservice,
