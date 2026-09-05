@@ -108,7 +108,7 @@ export type DB = {
   notifications: NotificationRecord[];
 };
 
-const KEY = "sahaseva.db.v2";
+const KEY = "sahaseva.db.v3";
 const CHANNEL = "sahaseva-db";
 
 export const bookingTotal = (b: BookingRecord) =>
