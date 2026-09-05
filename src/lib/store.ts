@@ -189,6 +189,13 @@ function seed(): DB {
     ...over,
   });
 
+  // Emergency demo request starts a few hours from now, with a matching label.
+  const soonToday = now + 3 * 3_600_000;
+  const soonHour = new Date(soonToday).getHours();
+  const fmtHour = (h: number) =>
+    `${((h + 11) % 12) + 1} ${h < 12 ? "AM" : "PM"}`;
+  const soonSlot = `${fmtHour(soonHour)} – ${fmtHour((soonHour + 2) % 24)}`;
+
   const extras: BookingRecord[] = [
     base({
       customerEmail: "lakshmi@sahaseva.in",
