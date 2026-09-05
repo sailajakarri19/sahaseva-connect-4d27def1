@@ -21,7 +21,7 @@ export type RouteResult = {
 };
 
 export const reverseGeocode = createServerFn({ method: "POST" })
-  .inputValidator((input: { lat: number; lng: number }) => {
+  .validator((input: { lat: number; lng: number }) => {
     if (typeof input?.lat !== "number" || typeof input?.lng !== "number") {
       throw new Error("Invalid coordinates");
     }
