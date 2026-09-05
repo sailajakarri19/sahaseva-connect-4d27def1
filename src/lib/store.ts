@@ -36,6 +36,8 @@ export type BookingRecord = {
   createdAt: number;
   customerEmail: string;
   customerName: string;
+  /** Contact number shown to the assigned worker (masked demo line). */
+  customerPhone?: string;
   workerId: string;
   categoryId: string;
   subservice: string;
@@ -106,7 +108,7 @@ export type DB = {
   notifications: NotificationRecord[];
 };
 
-const KEY = "sahaseva.db.v2";
+const KEY = "sahaseva.db.v3";
 const CHANNEL = "sahaseva-db";
 
 export const bookingTotal = (b: BookingRecord) =>
@@ -131,6 +133,7 @@ function seed(): DB {
       createdAt: startAt - 3_600_000,
       customerEmail: b.customer === "Lakshmi Devi" ? "lakshmi@sahaseva.in" : "guest@sahaseva.in",
       customerName: b.customer,
+      customerPhone: b.customer === "Lakshmi Devi" ? "+91 98490 12345" : "+91 90000 55221",
       workerId: b.workerId,
       categoryId: b.categoryId,
       subservice: b.subservice,
@@ -154,7 +157,82 @@ function seed(): DB {
       timeline: [{ status, at: startAt - 3_600_000 }],
     };
   });
-  return { version: 2, bookings: list, messages: [], reviews: [], notifications: [] };
+
+  // Fresh requests waiting on the demo worker (Ravi Kumar) so the full
+  // Pending -> Upcoming -> Active -> Completed flow is demonstrable.
+  const demoWorkerId = "SS-W-1042";
+  const base = (over: Partial<BookingRecord>): BookingRecord => ({
+    id: newBookingId(),
+    createdAt: now - 10 * 60_000,
+    customerEmail: "guest@sahaseva.in",
+    customerName: "Customer",
+    customerPhone: "+91 90000 00000",
+    workerId: demoWorkerId,
+    categoryId: "electrical",
+    subservice: "Fan repair",
+    problem: "",
+    date: new Date(now).toISOString().slice(0, 10),
+    slot: "4–6 PM",
+    startAt: now + 2 * day,
+    address: "Kondapur Village, Sangareddy",
+    locationSource: "manual",
+    distanceKm: 1.8,
+    emergency: false,
+    recurring: "One-time",
+    status: "Pending",
+    amount: 400,
+    materials: 0,
+    coopFee: 25,
+    platformFee: 25,
+    payment: "Pending",
+    timeline: [{ status: "Pending", at: now - 10 * 60_000 }],
+    ...over,
+  });
+
+  // Emergency demo request starts a few hours from now, with a matching label.
+  const soonToday = now + 3 * 3_600_000;
+  const soonHour = new Date(soonToday).getHours();
+  const fmtHour = (h: number) =>
+    `${((h + 11) % 12) + 1} ${h < 12 ? "AM" : "PM"}`;
+  const soonSlot = `${fmtHour(soonHour)} – ${fmtHour((soonHour + 2) % 24)}`;
+
+  const extras: BookingRecord[] = [
+    base({
+      customerEmail: "lakshmi@sahaseva.in",
+      customerName: "Lakshmi Devi",
+      customerPhone: "+91 98490 12345",
+      subservice: "Inverter service",
+      problem: "Inverter beeps and does not hold backup.",
+      startAt: now + 2 * day,
+      date: new Date(now + 2 * day).toISOString().slice(0, 10),
+      slot: "10–12 PM",
+      address: "H.No 4-21, Kondapur Village, Sangareddy",
+      amount: 550,
+      materials: 150,
+    }),
+    base({
+      customerEmail: "guest@sahaseva.in",
+      customerName: "Sunrise Clinic, Sangareddy",
+      customerPhone: "+91 90000 55221",
+      subservice: "Light installation",
+      problem: "Two ceiling lights flickering in reception.",
+      emergency: true,
+      startAt: soonToday,
+      date: new Date(soonToday).toISOString().slice(0, 10),
+      slot: soonSlot,
+      address: "Main Road, Sangareddy Town",
+      amount: 700,
+      materials: 200,
+    }),
+  ];
+
+  return {
+    version: 3,
+    bookings: [...extras, ...list],
+    messages: [],
+    reviews: [],
+    notifications: [],
+  };
 }
 
 let db: DB | null = null;

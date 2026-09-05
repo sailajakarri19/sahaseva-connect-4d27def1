@@ -53,15 +53,21 @@ export const otpFor = (id: string) =>
 /** Masked demo contact line — cooperative numbers are never shown directly. */
 const maskedPhone = (id: string) => `+91 98${otpFor(id)}0 ${otpFor(id + "x")}`;
 
+const timeOfDay = (d: Date) =>
+  d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true });
+
 function countdown(startAt: number) {
-  const diff = startAt - Date.now();
+  const now = new Date();
+  const start = new Date(startAt);
+  const diff = startAt - now.getTime();
   if (diff <= 0) return "Starting now";
   const mins = Math.round(diff / 60000);
-  if (mins < 60) return `Starts in ${mins} min`;
-  const hours = Math.round(mins / 60);
-  if (hours < 24) return `Starts in ${hours} hr`;
-  const days = Math.round(hours / 24);
-  return days === 1 ? "Starts tomorrow" : `Starts in ${days} days`;
+  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const dayGap = Math.round((startDay - today) / 86_400_000);
+  if (dayGap === 0) return mins < 60 ? `Starts in ${mins} min · today at ${timeOfDay(start)}` : `Today at ${timeOfDay(start)}`;
+  if (dayGap === 1) return `Tomorrow at ${timeOfDay(start)}`;
+  return `Starts in ${dayGap} days · ${start.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })} at ${timeOfDay(start)}`;
 }
 
 function Jobs() {
@@ -146,6 +152,7 @@ function Jobs() {
 function JobCard({ b, tab }: { b: BookingRecord; tab: Tab }) {
   const [otp, setOtp] = useState("");
   const [showCode, setShowCode] = useState(false);
+  const [details, setDetails] = useState(false);
   const total = bookingTotal(b);
   const startsAt = new Date(b.startAt);
 
@@ -185,8 +192,10 @@ function JobCard({ b, tab }: { b: BookingRecord; tab: Tab }) {
         <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {b.address}
       </p>
       <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <PhoneIcon className="h-3.5 w-3.5" /> {maskedPhone(b.id)} (masked line)
+        <PhoneIcon className="h-3.5 w-3.5" /> {b.customerPhone ?? maskedPhone(b.id)}
+        <span className="text-[10px]">(masked line)</span>
       </p>
+      {b.problem && <p className="mt-1 text-xs text-muted-foreground">“{b.problem}”</p>}
 
       {tab === "Pending" && (
         <div className="mt-3 flex gap-2">
@@ -227,12 +236,31 @@ function JobCard({ b, tab }: { b: BookingRecord; tab: Tab }) {
               Start work
             </button>
             <button
-              onClick={() => toast("Opening navigation")}
+              onClick={() => setDetails((v) => !v)}
               className="flex items-center gap-1.5 rounded-lg border px-3 text-xs font-bold"
             >
-              <Navigation className="h-3.5 w-3.5" /> Navigate
+              {details ? "Hide details" : "View details"}
+            </button>
+            <button
+              onClick={() => toast("Opening navigation")}
+              aria-label="Navigate"
+              className="flex items-center gap-1.5 rounded-lg border px-3 text-xs font-bold"
+            >
+              <Navigation className="h-3.5 w-3.5" />
             </button>
           </div>
+          {details && (
+            <dl className="mt-2 space-y-1 rounded-lg border bg-card p-3 text-xs">
+              <Row k="Customer" v={b.customerName} />
+              <Row k="Phone" v={b.customerPhone ?? maskedPhone(b.id)} />
+              <Row k="Service" v={b.subservice} />
+              <Row k="Date" v={startsAt.toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" })} />
+              <Row k="Time" v={b.slot} />
+              <Row k="Address" v={b.address} />
+              <Row k="Amount" v={inr(total)} />
+              <Row k="Start code" v={otpFor(b.id)} />
+            </dl>
+          )}
         </>
       )}
 
@@ -297,5 +325,14 @@ function JobCard({ b, tab }: { b: BookingRecord; tab: Tab }) {
         </div>
       )}
     </article>
+  );
+}
+
+function Row({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <dt className="text-muted-foreground">{k}</dt>
+      <dd className="text-right font-semibold">{v}</dd>
+    </div>
   );
 }
