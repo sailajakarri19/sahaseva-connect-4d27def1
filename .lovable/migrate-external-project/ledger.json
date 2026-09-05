@@ -1,0 +1,44 @@
+[
+  {
+    "capability": "Frontend routes and UI",
+    "source": "src/routes/*, src/components/*",
+    "outcome": "preserve",
+    "status": "complete",
+    "next_action": "Copied into the project; home, auth, customer, worker and admin routes render correctly"
+  },
+  {
+    "capability": "Session / auth",
+    "source": "src/lib/session.tsx, src/lib/accounts.ts",
+    "outcome": "preserve",
+    "status": "complete",
+    "next_action": "Demo localStorage session and registration flow verified"
+  },
+  {
+    "capability": "Design system",
+    "source": "src/styles.css",
+    "outcome": "preserve",
+    "status": "complete",
+    "next_action": "SahaSeva branding, colours and tokens applied"
+  },
+  {
+    "capability": "Razorpay payments",
+    "source": "src/lib/payments.functions.ts",
+    "outcome": "preserve",
+    "status": "complete",
+    "next_action": "Server function preserved; set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to enable live payments"
+  },
+  {
+    "capability": "Google Maps geocoding / routing",
+    "source": "src/lib/maps.functions.ts",
+    "outcome": "preserve",
+    "status": "complete",
+    "next_action": "Server function preserved; set GOOGLE_MAPS_API_KEY to enable live address/route lookups"
+  },
+  {
+    "capability": "Database records",
+    "source": "none",
+    "outcome": "not_applicable",
+    "status": "complete",
+    "next_action": "No records exported; app uses localStorage and server functions only"
+  }
+]
