@@ -191,8 +191,10 @@ function JobCard({ b, tab }: { b: BookingRecord; tab: Tab }) {
         <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {b.address}
       </p>
       <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <PhoneIcon className="h-3.5 w-3.5" /> {maskedPhone(b.id)} (masked line)
+        <PhoneIcon className="h-3.5 w-3.5" /> {b.customerPhone ?? maskedPhone(b.id)}
+        <span className="text-[10px]">(masked line)</span>
       </p>
+      {b.problem && <p className="mt-1 text-xs text-muted-foreground">“{b.problem}”</p>}
 
       {tab === "Pending" && (
         <div className="mt-3 flex gap-2">
