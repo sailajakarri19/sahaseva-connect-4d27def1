@@ -327,3 +327,12 @@ function JobCard({ b, tab }: { b: BookingRecord; tab: Tab }) {
     </article>
   );
 }
+
+function Row({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <dt className="text-muted-foreground">{k}</dt>
+      <dd className="text-right font-semibold">{v}</dd>
+    </div>
+  );
+}
