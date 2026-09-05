@@ -157,7 +157,75 @@ function seed(): DB {
       timeline: [{ status, at: startAt - 3_600_000 }],
     };
   });
-  return { version: 2, bookings: list, messages: [], reviews: [], notifications: [] };
+
+  // Fresh requests waiting on the demo worker (Ravi Kumar) so the full
+  // Pending -> Upcoming -> Active -> Completed flow is demonstrable.
+  const demoWorkerId = "SS-W-1042";
+  const base = (over: Partial<BookingRecord>): BookingRecord => ({
+    id: newBookingId(),
+    createdAt: now - 10 * 60_000,
+    customerEmail: "guest@sahaseva.in",
+    customerName: "Customer",
+    customerPhone: "+91 90000 00000",
+    workerId: demoWorkerId,
+    categoryId: "electrical",
+    subservice: "Fan repair",
+    problem: "",
+    date: new Date(now).toISOString().slice(0, 10),
+    slot: "4–6 PM",
+    startAt: now + 2 * day,
+    address: "Kondapur Village, Sangareddy",
+    locationSource: "manual",
+    distanceKm: 1.8,
+    emergency: false,
+    recurring: "One-time",
+    status: "Pending",
+    amount: 400,
+    materials: 0,
+    coopFee: 25,
+    platformFee: 25,
+    payment: "Pending",
+    timeline: [{ status: "Pending", at: now - 10 * 60_000 }],
+    ...over,
+  });
+
+  const extras: BookingRecord[] = [
+    base({
+      customerEmail: "lakshmi@sahaseva.in",
+      customerName: "Lakshmi Devi",
+      customerPhone: "+91 98490 12345",
+      subservice: "Inverter service",
+      problem: "Inverter beeps and does not hold backup.",
+      startAt: now + 2 * day,
+      date: new Date(now + 2 * day).toISOString().slice(0, 10),
+      slot: "10–12 PM",
+      address: "H.No 4-21, Kondapur Village, Sangareddy",
+      amount: 550,
+      materials: 150,
+    }),
+    base({
+      customerEmail: "guest@sahaseva.in",
+      customerName: "Sunrise Clinic, Sangareddy",
+      customerPhone: "+91 90000 55221",
+      subservice: "Light installation",
+      problem: "Two ceiling lights flickering in reception.",
+      emergency: true,
+      startAt: now + 3 * 3_600_000,
+      date: new Date(now).toISOString().slice(0, 10),
+      slot: "6–8 PM",
+      address: "Main Road, Sangareddy Town",
+      amount: 700,
+      materials: 200,
+    }),
+  ];
+
+  return {
+    version: 3,
+    bookings: [...extras, ...list],
+    messages: [],
+    reviews: [],
+    notifications: [],
+  };
 }
 
 let db: DB | null = null;
