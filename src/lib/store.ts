@@ -36,6 +36,8 @@ export type BookingRecord = {
   createdAt: number;
   customerEmail: string;
   customerName: string;
+  /** Contact number shown to the assigned worker (masked demo line). */
+  customerPhone?: string;
   workerId: string;
   categoryId: string;
   subservice: string;
