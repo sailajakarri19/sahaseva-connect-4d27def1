@@ -235,12 +235,31 @@ function JobCard({ b, tab }: { b: BookingRecord; tab: Tab }) {
               Start work
             </button>
             <button
-              onClick={() => toast("Opening navigation")}
+              onClick={() => setDetails((v) => !v)}
               className="flex items-center gap-1.5 rounded-lg border px-3 text-xs font-bold"
             >
-              <Navigation className="h-3.5 w-3.5" /> Navigate
+              {details ? "Hide details" : "View details"}
+            </button>
+            <button
+              onClick={() => toast("Opening navigation")}
+              aria-label="Navigate"
+              className="flex items-center gap-1.5 rounded-lg border px-3 text-xs font-bold"
+            >
+              <Navigation className="h-3.5 w-3.5" />
             </button>
           </div>
+          {details && (
+            <dl className="mt-2 space-y-1 rounded-lg border bg-card p-3 text-xs">
+              <Row k="Customer" v={b.customerName} />
+              <Row k="Phone" v={b.customerPhone ?? maskedPhone(b.id)} />
+              <Row k="Service" v={b.subservice} />
+              <Row k="Date" v={startsAt.toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" })} />
+              <Row k="Time" v={b.slot} />
+              <Row k="Address" v={b.address} />
+              <Row k="Amount" v={inr(total)} />
+              <Row k="Start code" v={otpFor(b.id)} />
+            </dl>
+          )}
         </>
       )}
 
