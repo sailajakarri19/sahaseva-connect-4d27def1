@@ -53,15 +53,21 @@ export const otpFor = (id: string) =>
 /** Masked demo contact line — cooperative numbers are never shown directly. */
 const maskedPhone = (id: string) => `+91 98${otpFor(id)}0 ${otpFor(id + "x")}`;
 
+const timeOfDay = (d: Date) =>
+  d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true });
+
 function countdown(startAt: number) {
-  const diff = startAt - Date.now();
+  const now = new Date();
+  const start = new Date(startAt);
+  const diff = startAt - now.getTime();
   if (diff <= 0) return "Starting now";
   const mins = Math.round(diff / 60000);
-  if (mins < 60) return `Starts in ${mins} min`;
-  const hours = Math.round(mins / 60);
-  if (hours < 24) return `Starts in ${hours} hr`;
-  const days = Math.round(hours / 24);
-  return days === 1 ? "Starts tomorrow" : `Starts in ${days} days`;
+  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const dayGap = Math.round((startDay - today) / 86_400_000);
+  if (dayGap === 0) return mins < 60 ? `Starts in ${mins} min · today at ${timeOfDay(start)}` : `Today at ${timeOfDay(start)}`;
+  if (dayGap === 1) return `Tomorrow at ${timeOfDay(start)}`;
+  return `Starts in ${dayGap} days · ${start.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })} at ${timeOfDay(start)}`;
 }
 
 function Jobs() {
