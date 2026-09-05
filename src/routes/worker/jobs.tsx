@@ -152,6 +152,7 @@ function Jobs() {
 function JobCard({ b, tab }: { b: BookingRecord; tab: Tab }) {
   const [otp, setOtp] = useState("");
   const [showCode, setShowCode] = useState(false);
+  const [details, setDetails] = useState(false);
   const total = bookingTotal(b);
   const startsAt = new Date(b.startAt);
 
