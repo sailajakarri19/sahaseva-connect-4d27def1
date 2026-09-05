@@ -1,0 +1,44 @@
+[
+  {
+    "capability": "Frontend routes and UI",
+    "source": "src/routes/*, src/components/*",
+    "outcome": "preserve",
+    "status": "pending",
+    "next_action": "Copy routes and components into the project"
+  },
+  {
+    "capability": "Session / auth",
+    "source": "src/lib/session.tsx, src/lib/accounts.ts",
+    "outcome": "preserve",
+    "status": "pending",
+    "next_action": "Keep localStorage-based demo session and registration flow"
+  },
+  {
+    "capability": "Design system",
+    "source": "src/styles.css",
+    "outcome": "preserve",
+    "status": "pending",
+    "next_action": "Copy styles.css to keep SahaSeva branding and tokens"
+  },
+  {
+    "capability": "Razorpay payments",
+    "source": "src/lib/payments.functions.ts",
+    "outcome": "preserve",
+    "status": "pending",
+    "next_action": "Preserve server function; runs in demo mode until RAZORPAY_KEY_ID/SECRET are set"
+  },
+  {
+    "capability": "Google Maps geocoding / routing",
+    "source": "src/lib/maps.functions.ts",
+    "outcome": "preserve",
+    "status": "pending",
+    "next_action": "Preserve server function; runs in demo mode until GOOGLE_MAPS_API_KEY is set"
+  },
+  {
+    "capability": "Database records",
+    "source": "none",
+    "outcome": "not_applicable",
+    "status": "complete",
+    "next_action": "No records exported; app uses localStorage and server functions only"
+  }
+]
