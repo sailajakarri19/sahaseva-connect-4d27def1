@@ -56,7 +56,7 @@ export const reverseGeocode = createServerFn({ method: "POST" })
   });
 
 export const routeToWorker = createServerFn({ method: "POST" })
-  .inputValidator((input: { from: { lat: number; lng: number }; to: { lat: number; lng: number } }) => input)
+  .validator((input: { from: { lat: number; lng: number }; to: { lat: number; lng: number } }) => input)
   .handler(async ({ data }): Promise<RouteResult> => {
     const key = process.env["GOOGLE_MAPS_API_KEY"];
     if (!key) {
